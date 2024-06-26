@@ -14,6 +14,16 @@ bool Config::isEmailValid(std::string &_email)
        return std::regex_match(_email, pattern);
 }
 
+bool Config::isTargetDirSpecified()
+{
+    return targetDir != "Not specified";
+}
+
+bool Config::isCertNameSpecified()
+{
+    return certName != "Not specified";
+}
+
 void Config::readConfig()
 {
     std::fstream cfgFile;
@@ -29,6 +39,7 @@ void Config::readConfig()
 
             if(!tempStr.empty())
             {
+//                std::cout << "String from file: " << tempStr << "\n";
                 if(tempStr.find("certDir") != std::string::npos)
                 {
                     certDir = tempStr.substr(tempStr.find("=") + 1);
@@ -46,10 +57,21 @@ void Config::readConfig()
                 {
                     userPass = tempStr.substr(tempStr.find("=") + 1);
                 }
+                else if(tempStr.find("targetDir") != std::string::npos)
+                {
+                    targetDir = tempStr.substr(tempStr.find("=") + 1);
+                }
+                else if(tempStr.find("certName") != std::string::npos)
+                {
+                    certName = tempStr.substr(tempStr.find("=") + 1);
+                }
+                else if(tempStr.find("convert") != std::string::npos)
+                {
+                    convertCert = std::stoi(tempStr.substr(tempStr.find("=") + 1));
+                }
             }
         }
-
-        if(certDir != "Not specified" && !domains.empty() && userPass != "Not specified")
+        if(email != "Not specified" && userPass !="Not specified" && !domains.empty())
         {
             emptyConfig = false;
         }
@@ -59,7 +81,6 @@ void Config::readConfig()
         std::cout << "Couldn't read the config file!\n";
     }
     cfgFile.close();
-
 }
 
 void Config::writeConfig()
@@ -86,6 +107,9 @@ void Config::writeConfig()
             }
 
             cfgFile << "pass=" << userPass << "\n";
+            cfgFile << "targetDir=" << targetDir << "\n";
+            cfgFile << "certName=" << certName <<"\n";
+            cfgFile << "convert=" << convertCert;
 
             std::cout << "The config file has been saved!\n";
         }
@@ -93,7 +117,6 @@ void Config::writeConfig()
         {
             std::cout << "Couldn't write the file file!\n";
         }
-
         cfgFile.close();
     }
 }
@@ -143,7 +166,7 @@ std::vector<std::string> Config::getDomains()
     return domains;
 }
 
-void Config::removeDomain(int num)
+void Config::removeDomain(int _num)
 {
     if(domains.empty())
     {
@@ -151,8 +174,8 @@ void Config::removeDomain(int num)
     }
     else
     {
-        std::cout << domains[num] << " - deleted!\n";
-        domains.erase(domains.begin() + num);
+        std::cout << domains[_num] << " - deleted!\n";
+        domains.erase(domains.begin() + _num);
     }
 }
 
@@ -176,9 +199,44 @@ bool Config::haveUserPassword()
     return userPass != "Not specified";
 }
 
-std::string Config::getConfigPath()
+void Config::setTargetDir(std::string _path)
 {
-    return path;
+    targetDir = _path;
+}
+
+std::string Config::getTargetDir()
+{
+    return targetDir;
+}
+
+void Config::setCertName(std::string _name)
+{
+    certName = _name;
+}
+
+std::string Config::getCertName()
+{
+    return certName;
+}
+
+void Config::addCertConvertParam(ConvertParam _param)
+{
+    convertCert |= _param;
+}
+
+void Config::removeCerConvertParam(ConvertParam _param)
+{
+    convertCert &= ~(_param);
+}
+
+void Config::clearCertConvertParam()
+{
+    convertCert = 0;
+}
+
+int Config::getCertConvertParam()
+{
+    return convertCert;
 }
 
 bool Config::isEmpty()

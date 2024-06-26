@@ -1,23 +1,19 @@
 #include <iostream>
 
+#include "certengine.h"
 #include "func.hpp"
 #include "config.h"
 
 int main()
 {
-    Config config;
-    config.readConfig();
+    CertEngine engine;
 
-    newLog();
-
-    if(config.isEmpty())
+    if(engine.isConfigured())
     {
-        toLog("Not configured!");
-        return 1;
+        engine.sendCertRequest();
+        engine.copyCerts();
+        engine.convertCerts();
     }
-
-    showConfig(config);
-    sendCertRequest(config);
 
     return 0;
 }

@@ -42,18 +42,20 @@ void sendCertRequest(Config &cfg)
 
     toLog(result);
 
-    std::string path = cfg.getCertDir() + "archive/" + cfg.getDomains()[0];
+    std::string certDir = cfg.getCertDir() + "archive/" + cfg.getDomains()[0];
+    std::string certFilePath;
 
-    toLog("Certificates dir: " + path);
-    for (const auto & entry : std::filesystem::directory_iterator(path)){
+    toLog("Certificates dir: " + certDir);
+    for (const auto & entry : std::filesystem::directory_iterator(certDir)){
 
         toLog(entry.path());
         std::string fileName = std::filesystem::path(entry.path()).filename().string();
-        toLog("File name: " + fileName);
+//        toLog("File name: " + fileName);
         if(fileName.find("fullchain") != std::string::npos)
         {
             toLog("Cert file: " + fileName);
-
+            certFilePath = entry.path();
+            toLog("Cert file path: " + certFilePath);
         }
     }
 
@@ -63,10 +65,10 @@ void sendCertRequest(Config &cfg)
     }
     else
     {
-        std::string path = cfg.getConfigPath() + "/" + cfg.getDomains()[0];
-
-        for (const auto & entry : std::filesystem::directory_iterator(path))
-        std::cout << entry.path() << std::endl;
+        for (const auto & entry : std::filesystem::directory_iterator(certDir))
+        {
+            std::cout << entry.path() << std::endl;
+        }
     }
 }
 

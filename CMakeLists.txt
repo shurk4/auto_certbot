@@ -10,6 +10,9 @@ add_executable(auto_certbot
     config.h
     config.cpp
     func.hpp
+
+    certengine.h
+    certengine.cpp
 )
 
 install(TARGETS auto_certbot
